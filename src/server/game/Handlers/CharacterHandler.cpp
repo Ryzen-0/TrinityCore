@@ -380,6 +380,7 @@ void WorldSession::HandleCharEnum(PreparedQueryResult result)
         WorldPackets::Character::EnumCharactersResult::RaceUnlock raceUnlock;
         raceUnlock.RaceID = requirement.first;
         raceUnlock.HasExpansion = GetAccountExpansion() >= requirement.second.Expansion;
+        raceUnlock.HasAchievement = requirement.second.AchievementId == 0;
         charEnum.RaceUnlockData.push_back(raceUnlock);
     }
 
@@ -1024,10 +1025,25 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         {
             if (pCurrChar->getClass() == CLASS_DEMON_HUNTER) /// @todo: find a more generic solution
                 pCurrChar->SendMovieStart(469);
-            else if (cEntry->CinematicSequenceID)
+            else if (cEntry->CinematicSequenceID && pCurrChar->GetMapId() != 2297)
                 pCurrChar->SendCinematicStart(cEntry->CinematicSequenceID);
             else if (ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(pCurrChar->getRace()))
-                pCurrChar->SendCinematicStart(rEntry->CinematicSequenceID);
+            {
+                if (pCurrChar->getRace() == RACE_NIGHTBORNE && pCurrChar->getClass() != 6)
+                    pCurrChar->GetSceneMgr().PlayScene(1900);
+                else if (pCurrChar->getRace() == RACE_HIGHMOUNTAIN_TAUREN && pCurrChar->getClass() != 6)
+                    pCurrChar->GetSceneMgr().PlayScene(1901);
+                else if (pCurrChar->getRace() == RACE_VOID_ELF && pCurrChar->getClass() != 6)
+                    pCurrChar->GetSceneMgr().PlayScene(1903);
+                else if (pCurrChar->getRace() == RACE_LIGHTFORGED_DRAENEI && pCurrChar->getClass() != 6)
+                    pCurrChar->GetSceneMgr().PlayScene(1902);
+                else if (pCurrChar->getRace() == RACE_DARK_IRON_DWARF)
+                    pCurrChar->GetSceneMgr().PlayScene(2137);
+                else if (pCurrChar->getRace() == RACE_MAGHAR_ORC)
+                    pCurrChar->GetSceneMgr().PlaySceneByPackageId(2085, 2);
+                else if (cEntry->CinematicSequenceID && pCurrChar->GetMapId() != 2297)
+                    pCurrChar->SendCinematicStart(rEntry->CinematicSequenceID);
+            }
 
             // send new char string if not empty
             if (!sWorld->GetNewCharString().empty())
@@ -2097,7 +2113,7 @@ void WorldSession::HandleCharRaceOrFactionChangeCallback(std::shared_ptr<WorldPa
         trans->Append(stmt);
 
         // Race specific languages
-        if (factionChangeInfo->RaceID != RACE_ORC && factionChangeInfo->RaceID != RACE_HUMAN && factionChangeInfo->RaceID != RACE_MAGHAR_ORC)
+        if (factionChangeInfo->RaceID != RACE_ORC && factionChangeInfo->RaceID != RACE_HUMAN && factionChangeInfo->RaceID != RACE_MAGHAR_ORC && factionChangeInfo->RaceID != RACE_KUL_TIRAN && factionChangeInfo->RaceID != RACE_VULPERA)
         {
             stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_CHAR_SKILL_LANGUAGE);
             stmt->setUInt64(0, lowGuid);
@@ -2112,6 +2128,7 @@ void WorldSession::HandleCharRaceOrFactionChangeCallback(std::shared_ptr<WorldPa
                 case RACE_LIGHTFORGED_DRAENEI:
                     stmt->setUInt16(1, 759);
                     break;
+                case RACE_MECHAGNOME:
                 case RACE_GNOME:
                     stmt->setUInt16(1, 313);
                     break;
@@ -2128,6 +2145,7 @@ void WorldSession::HandleCharRaceOrFactionChangeCallback(std::shared_ptr<WorldPa
                 case RACE_HIGHMOUNTAIN_TAUREN:
                     stmt->setUInt16(1, 115);
                     break;
+                case RACE_ZANDALARI_TROLL:
                 case RACE_TROLL:
                     stmt->setUInt16(1, 315);
                     break;
