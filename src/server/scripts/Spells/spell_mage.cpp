@@ -710,7 +710,7 @@ public:
     {
         PrepareSpellScript(spell_mage_finger_of_frost_SpellScript);
 
-        bool Validate(SpellInfo const* spellInfo) override
+        bool Validate(SpellInfo const* /*spellInfo*/) override
         {
             return ValidateSpellInfo({ SPELL_MAGE_FINGERS_OF_FROST });
         }
@@ -725,19 +725,19 @@ public:
 
             // Frostbolt has a 15% chance and Frozen Orb damage has a 10% to grant a charge of Fingers of Frost
             switch (spellId) {
-            case SPELL_MAGE_FROSTBOLT:
-                //chance = fingerFrostInfo->GetEffect(EFFECT_0)->CalcValue();
-                chance = 15;
+                case SPELL_MAGE_FROSTBOLT:
+                    //chance = fingerFrostInfo->GetEffect(EFFECT_0)->CalcValue();
+                    chance = 15;
 
-                // Frozen Touch (Frostbolt grants you Fingers of Frost and Brain Freeze 20% more often)
-                if (caster->HasAura(SPELL_MAGE_FROZEN_TOUCH)) {
-                    chance += 20;
-                }
-                break;
-            case SPELL_MAGE_FROZEN_ORB:
-                //chance = fingerFrostInfo->GetEffect(EFFECT_1)->CalcValue();
-                chance = 10;
-                break;
+                    // Frozen Touch (Frostbolt grants you Fingers of Frost and Brain Freeze 20% more often)
+                    if (caster->HasAura(SPELL_MAGE_FROZEN_TOUCH)) {
+                        chance += 20;
+                    }
+                    break;
+                case SPELL_MAGE_FROZEN_ORB:
+                    //chance = fingerFrostInfo->GetEffect(EFFECT_1)->CalcValue();
+                    chance = 10;
+                    break;
             }
 
             if (roll_chance_i(chance))
