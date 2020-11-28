@@ -1025,23 +1025,22 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         {
             if (pCurrChar->getClass() == CLASS_DEMON_HUNTER) /// @todo: find a more generic solution
                 pCurrChar->SendMovieStart(469);
-            else if (cEntry->CinematicSequenceID && pCurrChar->GetMapId() != 2297)
+            else if (cEntry->CinematicSequenceID)
                 pCurrChar->SendCinematicStart(cEntry->CinematicSequenceID);
-            else if (ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(pCurrChar->getRace()))
-            {
-                if (pCurrChar->getRace() == RACE_NIGHTBORNE && pCurrChar->getClass() != 6)
+            else if (ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(pCurrChar->getRace())) {
+                if (pCurrChar->getRace() == RACE_NIGHTBORNE)
                     pCurrChar->GetSceneMgr().PlayScene(1900);
-                else if (pCurrChar->getRace() == RACE_HIGHMOUNTAIN_TAUREN && pCurrChar->getClass() != 6)
+                else if (pCurrChar->getRace() == RACE_HIGHMOUNTAIN_TAUREN)
                     pCurrChar->GetSceneMgr().PlayScene(1901);
-                else if (pCurrChar->getRace() == RACE_VOID_ELF && pCurrChar->getClass() != 6)
+                else if (pCurrChar->getRace() == RACE_VOID_ELF)
                     pCurrChar->GetSceneMgr().PlayScene(1903);
-                else if (pCurrChar->getRace() == RACE_LIGHTFORGED_DRAENEI && pCurrChar->getClass() != 6)
+                else if (pCurrChar->getRace() == RACE_LIGHTFORGED_DRAENEI)
                     pCurrChar->GetSceneMgr().PlayScene(1902);
                 else if (pCurrChar->getRace() == RACE_DARK_IRON_DWARF)
                     pCurrChar->GetSceneMgr().PlayScene(2137);
                 else if (pCurrChar->getRace() == RACE_MAGHAR_ORC)
                     pCurrChar->GetSceneMgr().PlaySceneByPackageId(2085, 2);
-                else if (cEntry->CinematicSequenceID && pCurrChar->GetMapId() != 2297)
+                else
                     pCurrChar->SendCinematicStart(rEntry->CinematicSequenceID);
             }
 
