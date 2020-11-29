@@ -1,12 +1,14 @@
 
 -- AlliedRaced
-DELETE FROM `scene_template` WHERE SceneId IN (1900,1901,1902,1903,2137);
+DELETE FROM `scene_template` WHERE SceneId IN (1900,1901,1902,1903,2137,3049, 3095);
 INSERT INTO `scene_template`(`SceneId`,`Flags`,`ScriptPackageID`,`ScriptName`) VALUES 
 (1900,2,2007,''),
 (1901,2,1984,''),
 (1902,2,2005,''),
 (1903,2,2006,''),
-(2137,9,2086,'');
+(2137,9,2086,''),
+(3049,0,2085,''),
+(3095,9,2780,'');
 
 DELETE FROM `playercreateinfo` WHERE race IN (27,28,29,30,31,32,34,35,36,37);
 INSERT INTO `playercreateinfo` (`race`,`class`,`map`,`zone`,`position_x`,`position_y`,`position_z`,`orientation`) 
@@ -99,9 +101,7 @@ INSERT INTO `playercreateinfo_cast_spell` (`raceMask`,`classMask`,`spell`,`note`
 (67108864,4,259087,'Nightborne - Hunter - Blue Mana Saber'),
 (1073741824,4,294659,'Zandalari Trolls - Hunter - Slate Direhorn'),
 (2147483648,4,294662,'Kul Tiran - Hunter - Alpine Falcon'),
-(2048,4,27409,'Dark Iron Dwarf - Hunter - Blazehound'),
 (4096,4,312338,'Vulpera - Hunter - Crimson Cobra'),
-(8192,4,82308,'Maghar Orc - Hunter - Shadowmoon Stalker (Not Correct)'),
 (16384,4,312339,'Mechagnomes - Hunter - Robowolf'),
 (8589934592,4,274907,'Dark Iron Dwarf Hunter Pet'),
 (34359738368,4,274905,'Maghar Orc Hunter Pet');

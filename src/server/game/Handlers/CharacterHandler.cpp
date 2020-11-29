@@ -1026,22 +1026,28 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
             if (pCurrChar->getClass() == CLASS_DEMON_HUNTER) /// @todo: find a more generic solution
                 pCurrChar->SendMovieStart(469);
             else if (cEntry->CinematicSequenceID && pCurrChar->GetMapId() != 2297)
-                pCurrChar->SendCinematicStart(cEntry->CinematicSequenceID);
-            else if (ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(pCurrChar->getRace()))
-            {
-                if (pCurrChar->getRace() == RACE_NIGHTBORNE && pCurrChar->getClass() != 6)
+                pCurrChar->SendCinematicStart(cEntry->CinematicSequenceID); // old dk intro
+            else if (ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(pCurrChar->getRace())) {
+                if (rEntry->CinematicSequenceID && pCurrChar->getClass() == 6) {
+                    // pCurrChar->GetSceneMgr().PlayScene(0); // TODO new dk intro (dunno sceneId)
+                    pCurrChar->GetSceneMgr().PlaySceneByPackageId(2780, 2);
+                } else if (pCurrChar->getRace() == RACE_NIGHTBORNE)
                     pCurrChar->GetSceneMgr().PlayScene(1900);
-                else if (pCurrChar->getRace() == RACE_HIGHMOUNTAIN_TAUREN && pCurrChar->getClass() != 6)
+                else if (pCurrChar->getRace() == RACE_HIGHMOUNTAIN_TAUREN)
                     pCurrChar->GetSceneMgr().PlayScene(1901);
-                else if (pCurrChar->getRace() == RACE_VOID_ELF && pCurrChar->getClass() != 6)
+                else if (pCurrChar->getRace() == RACE_VOID_ELF)
                     pCurrChar->GetSceneMgr().PlayScene(1903);
-                else if (pCurrChar->getRace() == RACE_LIGHTFORGED_DRAENEI && pCurrChar->getClass() != 6)
+                else if (pCurrChar->getRace() == RACE_LIGHTFORGED_DRAENEI)
                     pCurrChar->GetSceneMgr().PlayScene(1902);
                 else if (pCurrChar->getRace() == RACE_DARK_IRON_DWARF)
                     pCurrChar->GetSceneMgr().PlayScene(2137);
                 else if (pCurrChar->getRace() == RACE_MAGHAR_ORC)
                     pCurrChar->GetSceneMgr().PlaySceneByPackageId(2085, 2);
-                else if (cEntry->CinematicSequenceID && pCurrChar->GetMapId() != 2297)
+                else if (pCurrChar->getRace() == RACE_KUL_TIRAN)
+                    pCurrChar->GetSceneMgr().PlaySceneByPackageId(2494, 2); // missing sceneID in DB
+                else if (pCurrChar->getRace() == RACE_VULPERA)
+                    pCurrChar->GetSceneMgr().PlaySceneByPackageId(2790, 2); // missing sceneID in DB
+                else if(rEntry->CinematicSequenceID)
                     pCurrChar->SendCinematicStart(rEntry->CinematicSequenceID);
             }
 
