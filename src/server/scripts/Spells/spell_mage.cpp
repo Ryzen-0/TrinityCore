@@ -749,7 +749,7 @@ class spell_mage_finger_of_frost : public SpellScript
     {
         AfterCast += SpellCastFn(spell_mage_finger_of_frost::HandleAfterCast);
     }
-}
+};
 
 // Ice Lance - 30455
 class spell_mage_ice_lance : public SpellScript
