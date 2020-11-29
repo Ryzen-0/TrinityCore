@@ -702,86 +702,75 @@ class spell_mage_water_elemental_freeze : public SpellScript
 };
 
 // Ice Lance - 30455
-class spell_mage_ice_lance : public SpellScriptLoader
+class spell_mage_ice_lance : public SpellScript
 {
-public:
-    spell_mage_ice_lance() : SpellScriptLoader("spell_mage_ice_lance") { }
+    PrepareSpellScript(spell_mage_ice_lance);
 
-    class spell_mage_ice_lance_SpellScript : public SpellScript
+    bool Validate(SpellInfo const* /*spellInfo*/) override
     {
-        PrepareSpellScript(spell_mage_ice_lance_SpellScript);
+        return ValidateSpellInfo({
+            SPELL_MAGE_ICE_LANCE,
+            SPELL_MAGE_ICE_LANCE_TRIGGER
+        });
+    }
 
-        bool Validate(SpellInfo const* /*spellInfo*/) override
-        {
-            return ValidateSpellInfo
-            ({
-                SPELL_MAGE_ICE_LANCE
-            });
-        }
-
-        void HandleOnHit(SpellEffIndex /*effIndex*/)
-        {
-            Unit* caster = GetCaster();
-            Unit* target = GetHitUnit();
-            if (!caster && !target)
-                return;
-
-            // Thermal Void
-            if (caster->HasAura(SPELL_MAGE_THERMAL_VOID) && (target->HasAuraState(AURA_STATE_FROZEN) || caster->HasAura(SPELL_MAGE_FINGERS_OF_FROST)))
-            {
-                if (Aura* icyVeins = caster->GetAura(SPELL_MAGE_ICY_VEINS))
-                {
-                    if (SpellInfo const* thermalVoidInfo = sSpellMgr->GetSpellInfo(SPELL_MAGE_THERMAL_VOID, GetCastDifficulty()))
-                        if (SpellEffectInfo const* eff0 = thermalVoidInfo->GetEffect(EFFECT_0))
-                        {
-                            int32 increaseDuration = eff0->CalcValue() * IN_MILLISECONDS;
-                            int32 newDuration = (icyVeins->GetDuration() + increaseDuration);
-                            icyVeins->SetDuration(newDuration);
-                        }
-                }
-            }
-
-            if (Aura* fingersOfFrost = caster->GetAura(SPELL_MAGE_FINGERS_OF_FROST))
-            {
-                uint8 stack = fingersOfFrost->GetStackAmount();
-                fingersOfFrost->ModStackAmount(-1);
-            }
-
-            // if( target->HasAuraState(AURA_STATE_FROZEN))
-                caster->CastSpell(target, SPELL_MAGE_ICE_LANCE_TRIGGER, true); // TODO damage x3 on frozen target
-
-            // Splitting Ice
-            if (caster->HasAura(SPELL_MAGE_SPLITTING_ICE)) {
-                float radius = 10.0f;
-                std::list<Unit*> TargetList;
-                Trinity::AnyFriendlyUnitInObjectRangeCheck u_check(target, target, radius);
-                Trinity::UnitListSearcher<Trinity::AnyFriendlyUnitInObjectRangeCheck> searcher(target, TargetList, u_check);
-                Cell::VisitAllObjects(target, searcher, radius);
-
-                for (std::list<Unit*>::const_iterator itr = TargetList.begin(); itr != TargetList.end(); ++itr)
-                {
-                    if ((*itr)->GetGUID() == target->GetGUID()) continue;
-                    caster->CastSpell((*itr), SPELL_MAGE_ICE_LANCE_TRIGGER, true); // TODO 80% of the damage intead of 100%
-                    break;
-                }
-            }
-
-            // Chain Reaction (TODO)
-            if (Aura* chainReaction = caster->GetAura(SPELL_MAGE_CHAIN_REACTION)) {
-                uint8 stack = chainReaction->GetStackAmount();
-                chainReaction->ModStackAmount(+1);
-            }
-        }
-
-        void Register() override
-        {
-            OnEffectHitTarget += SpellEffectFn(spell_mage_ice_lance_SpellScript::HandleOnHit, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-        }
-    };
-
-    SpellScript* GetSpellScript() const override
+    void HandleOnHit(SpellEffIndex /*effIndex*/)
     {
-        return new spell_mage_ice_lance_SpellScript();
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster && !target)
+            return;
+
+        // Thermal Void
+        if (caster->HasAura(SPELL_MAGE_THERMAL_VOID) && (target->HasAuraState(AURA_STATE_FROZEN) || caster->HasAura(SPELL_MAGE_FINGERS_OF_FROST)))
+        {
+            if (Aura* icyVeins = caster->GetAura(SPELL_MAGE_ICY_VEINS))
+            {
+                if (SpellInfo const* thermalVoidInfo = sSpellMgr->GetSpellInfo(SPELL_MAGE_THERMAL_VOID, GetCastDifficulty()))
+                    if (SpellEffectInfo const* eff0 = thermalVoidInfo->GetEffect(EFFECT_0))
+                    {
+                        int32 increaseDuration = eff0->CalcValue() * IN_MILLISECONDS;
+                        int32 newDuration = (icyVeins->GetDuration() + increaseDuration);
+                        icyVeins->SetDuration(newDuration);
+                    }
+            }
+        }
+
+        if (Aura* fingersOfFrost = caster->GetAura(SPELL_MAGE_FINGERS_OF_FROST))
+        {
+            uint8 stack = fingersOfFrost->GetStackAmount();
+            fingersOfFrost->ModStackAmount(-1);
+        }
+
+        // if( target->HasAuraState(AURA_STATE_FROZEN))
+            caster->CastSpell(target, SPELL_MAGE_ICE_LANCE_TRIGGER, true); // TODO damage x3 on frozen target
+
+        // Splitting Ice
+        if (caster->HasAura(SPELL_MAGE_SPLITTING_ICE)) {
+            float radius = 10.0f;
+            std::list<Unit*> TargetList;
+            Trinity::AnyFriendlyUnitInObjectRangeCheck u_check(target, target, radius);
+            Trinity::UnitListSearcher<Trinity::AnyFriendlyUnitInObjectRangeCheck> searcher(target, TargetList, u_check);
+            Cell::VisitAllObjects(target, searcher, radius);
+
+            for (std::list<Unit*>::const_iterator itr = TargetList.begin(); itr != TargetList.end(); ++itr)
+            {
+                if ((*itr)->GetGUID() == target->GetGUID()) continue;
+                caster->CastSpell((*itr), SPELL_MAGE_ICE_LANCE_TRIGGER, true); // TODO 80% of the damage intead of 100%
+                break;
+            }
+        }
+
+        // Chain Reaction (TODO)
+        if (Aura* chainReaction = caster->GetAura(SPELL_MAGE_CHAIN_REACTION)) {
+            uint8 stack = chainReaction->GetStackAmount();
+            chainReaction->ModStackAmount(+1);
+        }
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_mage_ice_lance::HandleOnHit, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
     }
 };
 
@@ -806,5 +795,5 @@ void AddSC_mage_spell_scripts()
     RegisterSpellScript(spell_mage_time_warp);
     RegisterSpellScript(spell_mage_trigger_chilled);
     RegisterSpellScript(spell_mage_water_elemental_freeze);
-    new spell_mage_ice_lance();
+    RegisterSpellScript(spell_mage_ice_lance);
 }
