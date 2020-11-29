@@ -676,31 +676,6 @@ class spell_mage_trigger_chilled : public SpellScript
     }
 };
 
-// 33395 Water Elemental's Freeze
-class spell_mage_water_elemental_freeze : public SpellScript
-{
-    PrepareSpellScript(spell_mage_water_elemental_freeze);
-
-    bool Validate(SpellInfo const* /*spellInfo*/) override
-    {
-        return ValidateSpellInfo({ SPELL_MAGE_FINGERS_OF_FROST });
-    }
-
-    void HandleImprovedFreeze()
-    {
-        Unit* owner = GetCaster()->GetOwner();
-        if (!owner)
-            return;
-
-        owner->CastSpell(owner, SPELL_MAGE_FINGERS_OF_FROST, true);
-    }
-
-    void Register() override
-    {
-        AfterHit += SpellHitFn(spell_mage_water_elemental_freeze::HandleImprovedFreeze);
-    }
-};
-
 // Ice Lance - 30455
 class spell_mage_ice_lance : public SpellScriptLoader
 {
@@ -713,10 +688,7 @@ public:
 
         bool Validate(SpellInfo const* /*spellInfo*/) override
         {
-            return ValidateSpellInfo
-            ({
-                SPELL_MAGE_ICE_LANCE
-            });
+            return ValidateSpellInfo({ SPELL_MAGE_ICE_LANCE });
         }
 
         void HandleOnHit(SpellEffIndex /*effIndex*/)
@@ -782,6 +754,31 @@ public:
     SpellScript* GetSpellScript() const override
     {
         return new spell_mage_ice_lance_SpellScript();
+    }
+};
+
+// 33395 Water Elemental's Freeze
+class spell_mage_water_elemental_freeze : public SpellScript
+{
+    PrepareSpellScript(spell_mage_water_elemental_freeze);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        return ValidateSpellInfo({ SPELL_MAGE_FINGERS_OF_FROST });
+    }
+
+    void HandleImprovedFreeze()
+    {
+        Unit* owner = GetCaster()->GetOwner();
+        if (!owner)
+            return;
+
+        owner->CastSpell(owner, SPELL_MAGE_FINGERS_OF_FROST, true);
+    }
+
+    void Register() override
+    {
+        AfterHit += SpellHitFn(spell_mage_water_elemental_freeze::HandleImprovedFreeze);
     }
 };
 
