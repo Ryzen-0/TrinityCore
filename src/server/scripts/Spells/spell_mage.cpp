@@ -764,19 +764,13 @@ class spell_mage_ice_lance : public SpellScript
         if (targetFrozen || caster->HasAura(SPELL_MAGE_FINGERS_OF_FROST))
         {
             if (Aura* chainReaction_aura = caster->GetAura(SPELL_MAGE_CHAIN_REACTION))
-            {
                 chainReaction_aura->ModStackAmount(+1);
-            }
             else
-            {
                 caster->CastSpell(caster, SPELL_MAGE_CHAIN_REACTION, true);
-            }
         }
 
         if (Aura* fingersOfFrost = caster->GetAura(SPELL_MAGE_FINGERS_OF_FROST))
-        {
             fingersOfFrost->ModStackAmount(-1);
-        }
     }
 
     void Register() override
