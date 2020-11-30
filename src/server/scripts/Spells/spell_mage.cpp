@@ -727,18 +727,19 @@ class spell_mage_ice_lance : public SpellScript
             if (Aura* icyVeins = caster->GetAura(SPELL_MAGE_ICY_VEINS))
             {
                 if (SpellInfo const* thermalVoidInfo = sSpellMgr->GetSpellInfo(SPELL_MAGE_THERMAL_VOID, GetCastDifficulty()))
+                {
                     if (SpellEffectInfo const* eff0 = thermalVoidInfo->GetEffect(EFFECT_0))
                     {
                         int32 increaseDuration = eff0->CalcValue() * IN_MILLISECONDS;
                         int32 newDuration = (icyVeins->GetDuration() + increaseDuration);
                         icyVeins->SetDuration(newDuration);
                     }
+                }
             }
         }
 
         if (Aura* fingersOfFrost = caster->GetAura(SPELL_MAGE_FINGERS_OF_FROST))
         {
-            uint8 stack = fingersOfFrost->GetStackAmount();
             fingersOfFrost->ModStackAmount(-1);
         }
 
@@ -746,7 +747,8 @@ class spell_mage_ice_lance : public SpellScript
             caster->CastSpell(target, SPELL_MAGE_ICE_LANCE_TRIGGER, true); // TODO damage x3 on frozen target
 
         // Splitting Ice
-        if (caster->HasAura(SPELL_MAGE_SPLITTING_ICE)) {
+        if (caster->HasAura(SPELL_MAGE_SPLITTING_ICE))
+        {
             float radius = 10.0f;
             std::list<Unit*> TargetList;
             Trinity::AnyFriendlyUnitInObjectRangeCheck u_check(target, target, radius);
@@ -762,8 +764,8 @@ class spell_mage_ice_lance : public SpellScript
         }
 
         // Chain Reaction (TODO)
-        if (Aura* chainReaction = caster->GetAura(SPELL_MAGE_CHAIN_REACTION)) {
-            uint8 stack = chainReaction->GetStackAmount();
+        if (Aura* chainReaction = caster->GetAura(SPELL_MAGE_CHAIN_REACTION))
+        {
             chainReaction->ModStackAmount(+1);
         }
     }
