@@ -64,7 +64,7 @@ enum MageSpells
     SPELL_MAGE_THERMAL_VOID                      = 155149,
     SPELL_MAGE_ICY_VEINS                         = 12472,
     SPELL_MAGE_SPLITTING_ICE                     = 56377,
-    SPELL_MAGE_CHAIN_REACTION                    = 278309,
+    SPELL_MAGE_CHAIN_REACTION                    = 278310,
 };
 
 enum MiscSpells
@@ -721,8 +721,10 @@ class spell_mage_ice_lance : public SpellScript
         if (!caster && !target)
             return;
 
+        bool targetFrozen = target->HasAuraState(AURA_STATE_FROZEN);
+
         // Thermal Void
-        if (caster->HasAura(SPELL_MAGE_THERMAL_VOID) && (target->HasAuraState(AURA_STATE_FROZEN) || caster->HasAura(SPELL_MAGE_FINGERS_OF_FROST)))
+        if (caster->HasAura(SPELL_MAGE_THERMAL_VOID) && (targetFrozen || caster->HasAura(SPELL_MAGE_FINGERS_OF_FROST)))
         {
             if (Aura* icyVeins = caster->GetAura(SPELL_MAGE_ICY_VEINS))
             {
@@ -736,11 +738,6 @@ class spell_mage_ice_lance : public SpellScript
                     }
                 }
             }
-        }
-
-        if (Aura* fingersOfFrost = caster->GetAura(SPELL_MAGE_FINGERS_OF_FROST))
-        {
-            fingersOfFrost->ModStackAmount(-1);
         }
 
         // if( target->HasAuraState(AURA_STATE_FROZEN))
@@ -763,10 +760,22 @@ class spell_mage_ice_lance : public SpellScript
             }
         }
 
-        // Chain Reaction (TODO)
-        if (Aura* chainReaction = caster->GetAura(SPELL_MAGE_CHAIN_REACTION))
+        // Chain Reaction
+        if (targetFrozen || caster->HasAura(SPELL_MAGE_FINGERS_OF_FROST))
         {
-            chainReaction->ModStackAmount(+1);
+            if (Aura* chainReaction_aura = caster->GetAura(SPELL_MAGE_CHAIN_REACTION))
+            {
+                chainReaction_aura->ModStackAmount(+1);
+            }
+            else
+            {
+                caster->CastSpell(caster, SPELL_MAGE_CHAIN_REACTION, true);
+            }
+        }
+
+        if (Aura* fingersOfFrost = caster->GetAura(SPELL_MAGE_FINGERS_OF_FROST))
+        {
+            fingersOfFrost->ModStackAmount(-1);
         }
     }
 
