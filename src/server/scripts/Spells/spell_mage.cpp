@@ -768,13 +768,11 @@ class spell_mage_ice_lance : public SpellScript
     {
         Unit* caster = GetCaster();
         Unit* target = GetHitUnit();
-        if (!caster && !target)
-            return;
 
-        bool targetFrozen = target->HasAuraState(AURA_STATE_FROZEN);
+        bool targetFrozen = target->HasAuraState(AURA_STATE_FROZEN, GetSpellInfo(), caster);
 
         // Thermal Void
-        if (caster->HasAura(SPELL_MAGE_THERMAL_VOID) && (targetFrozen || caster->HasAura(SPELL_MAGE_FINGERS_OF_FROST)))
+        if (caster->HasAura(SPELL_MAGE_THERMAL_VOID) && targetFrozen)
         {
             if (Aura* icyVeins = caster->GetAura(SPELL_MAGE_ICY_VEINS))
             {
@@ -790,43 +788,14 @@ class spell_mage_ice_lance : public SpellScript
             }
         }
 
-        // if( target->HasAuraState(AURA_STATE_FROZEN))
-            caster->CastSpell(target, SPELL_MAGE_ICE_LANCE_TRIGGER, true); // TODO damage x3 on frozen target
-
-        // Splitting Ice
-        if (caster->HasAura(SPELL_MAGE_SPLITTING_ICE))
-        {
-            float radius = 10.0f;
-            std::list<Unit*> TargetList;
-            Trinity::AnyFriendlyUnitInObjectRangeCheck u_check(target, target, radius);
-            Trinity::UnitListSearcher<Trinity::AnyFriendlyUnitInObjectRangeCheck> searcher(target, TargetList, u_check);
-            Cell::VisitAllObjects(target, searcher, radius);
-
-            for (std::list<Unit*>::const_iterator itr = TargetList.begin(); itr != TargetList.end(); ++itr)
-            {
-                if ((*itr)->GetGUID() == target->GetGUID()) continue;
-                caster->CastSpell((*itr), SPELL_MAGE_ICE_LANCE_TRIGGER, true); // TODO 80% of the damage intead of 100%
-                break;
-            }
-        }
+        caster->CastSpell(target, SPELL_MAGE_ICE_LANCE_TRIGGER, true); // TODO damage x3 on frozen target
 
         // Chain Reaction
-        if (targetFrozen || caster->HasAura(SPELL_MAGE_FINGERS_OF_FROST))
-        {
-            if (Aura* chainReaction_aura = caster->GetAura(SPELL_MAGE_CHAIN_REACTION))
-            {
-                chainReaction_aura->ModStackAmount(+1);
-            }
-            else
-            {
-                caster->CastSpell(caster, SPELL_MAGE_CHAIN_REACTION, true);
-            }
-        }
+        if (targetFrozen)
+            caster->CastSpell(caster, SPELL_MAGE_CHAIN_REACTION, true);
 
         if (Aura* fingersOfFrost = caster->GetAura(SPELL_MAGE_FINGERS_OF_FROST))
-        {
             fingersOfFrost->ModStackAmount(-1);
-        }
     }
 
     void Register() override
