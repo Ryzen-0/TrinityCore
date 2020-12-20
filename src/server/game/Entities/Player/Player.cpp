@@ -492,7 +492,7 @@ bool Player::Create(ObjectGuid::LowType guidlow, WorldPackets::Character::Charac
     else if (getClass() == CLASS_DEMON_HUNTER)
         start_level = sWorld->getIntConfig(CONFIG_START_DEMON_HUNTER_PLAYER_LEVEL);
     else if (getRace() >= RACE_NIGHTBORNE)
-        start_level = 20;
+        start_level = 10;
 
     if (createInfo->TemplateSet)
     {
